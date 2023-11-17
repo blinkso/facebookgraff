@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=ua.blink.facebookgraff.autoconfigure.TelegraffAutoConfiguration

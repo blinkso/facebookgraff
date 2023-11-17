@@ -1,5 +1,5 @@
-include("whatsappgraff-core")
-include("whatsappgraff-autoconfigure")
-include("whatsappgraff-starter")
+include("facebookgraff-core")
+include("facebookgraff-autoconfigure")
+include("facebookgraff-starter")
 
-rootProject.name = "whatsappgraff"
+rootProject.name = "facebookgraff"

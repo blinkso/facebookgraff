@@ -10,8 +10,8 @@ plugins {
     id("org.springframework.boot") version "3.0.5"
 }
 
-group = "ua.blink.whatsappgraff"
-version = "1.0.5"
+group = "ua.blink.facebookgraff"
+version = "1.0.0"
 
 allprojects {
     repositories {
@@ -111,8 +111,8 @@ subprojects {
 
                 pom {
                     val GITHUB_TELEGRAFF_URL: String by project
-                    name.set("whatsappgraff")
-                    description.set("Kotlin DSL for WhatsApp bot development")
+                    name.set("facebookgraff")
+                    description.set("Kotlin DSL for Facebook bot development")
                     url.set(GITHUB_TELEGRAFF_URL)
                     licenses {
                         license {
