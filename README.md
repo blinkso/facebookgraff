@@ -5,12 +5,12 @@
 ## Settings
 
 ```
-whatsapp.access-key=                  # api key
-whatsapp.account-sid=                 # account sid
-whatsapp.service-sid=                 # messaging service sid
-whatsapp.mode=                        # polling (default), webhook
-whatsapp.webhook-base-url=            # required for webhook mode
-whatsapp.webhook-endpoint-url=        # optional
+facebook.access-key=                  # api key
+facebook.account-sid=                 # account sid
+facebook.service-sid=                 # messaging service sid
+facebook.mode=                        # polling (default), webhook
+facebook.webhook-base-url=            # required for webhook mode
+facebook.webhook-endpoint-url=        # optional
 ```
 
 ## Usage
