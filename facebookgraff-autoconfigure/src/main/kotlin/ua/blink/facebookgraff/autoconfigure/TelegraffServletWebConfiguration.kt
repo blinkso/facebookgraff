@@ -32,7 +32,7 @@ import ua.blink.facebookgraff.filter.*
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(PollingClient::class, WebhookClient::class)
-class TelegraffServletWebConfiguration(@Qualifier("whatsappProperties") val properties: Properties) {
+class TelegraffServletWebConfiguration(@Qualifier("facebookProperties") val properties: Properties) {
 
     @Bean
     fun objectMapper(): ObjectMapper {
@@ -55,14 +55,14 @@ class TelegraffServletWebConfiguration(@Qualifier("whatsappProperties") val prop
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = ["whatsappProperties"])
+    @ConditionalOnMissingBean(name = ["facebookProperties"])
     fun properties(): Properties = properties
 
     // region Clients
 
     @Bean
     @ConditionalOnMissingBean(Client::class)
-    @ConditionalOnProperty(name = ["whatsapp.mode"], havingValue = "polling", matchIfMissing = true)
+    @ConditionalOnProperty(name = ["facebook.mode"], havingValue = "polling", matchIfMissing = true)
     fun pollingClient(
         conversationApi: ConversationApi,
         publisher: ApplicationEventPublisher
@@ -72,7 +72,7 @@ class TelegraffServletWebConfiguration(@Qualifier("whatsappProperties") val prop
 
     @Bean
     @ConditionalOnMissingBean(Client::class)
-    @ConditionalOnProperty(name = ["whatsapp.mode"], havingValue = "webhook")
+    @ConditionalOnProperty(name = ["facebook.mode"], havingValue = "webhook")
     fun webhookClient(
         objectMapper: ObjectMapper,
         conversationApi: ConversationApi,

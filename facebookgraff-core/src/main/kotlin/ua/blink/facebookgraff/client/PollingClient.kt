@@ -22,7 +22,7 @@ class PollingClient(
     }
 
     override fun start() {
-        log.info("WhatsApp client: POLLING")
+        log.info("Facebook client: POLLING")
         client.start()
     }
 

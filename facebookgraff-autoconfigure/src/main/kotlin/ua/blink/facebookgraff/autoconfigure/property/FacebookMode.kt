@@ -1,5 +1,5 @@
 package ua.blink.facebookgraff.autoconfigure.property
 
-enum class WhatsAppMode {
+enum class FacebookMode {
     POLLING, WEBHOOK
 }

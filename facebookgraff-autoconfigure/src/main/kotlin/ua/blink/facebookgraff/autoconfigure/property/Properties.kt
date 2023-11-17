@@ -4,22 +4,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import java.util.*
 
-@Component("whatsappProperties")
-@ConfigurationProperties(prefix = "whatsapp", ignoreUnknownFields = false)
+@Component("facebookProperties")
+@ConfigurationProperties(prefix = "facebook", ignoreUnknownFields = false)
 class Properties {
 
     /**
-     * WhatsApp Bot API Access Key.
+     * facebook Bot API Access Key.
      */
     var accessKey: String = ""
 
     /**
-     * WhatsApp Bot API Account Key.
+     * facebook Bot API Account Key.
      */
     var accountSid: String = ""
 
     /**
-     * WhatsApp Bot API Service Key.
+     * facebook Bot API Service Key.
      */
     var serviceSid: String = ""
 
@@ -34,9 +34,9 @@ class Properties {
     var listTemplate: List<String> = listOf()
 
     /**
-     * WhatsApp updates mode.
+     * facebook updates mode.
      */
-    var mode = WhatsAppMode.POLLING
+    var mode = FacebookMode.POLLING
 
     /**
      * Webhook base URL.
@@ -46,9 +46,9 @@ class Properties {
 
     /**
      * Webhook endpoint url.
-     * For example, /whatsapp.
+     * For example, /facebook.
      */
-    var webhookEndpointUrl: String = "/whatsapp/" + UUID.randomUUID().toString()
+    var webhookEndpointUrl: String = "/facebook/" + UUID.randomUUID().toString()
 
     /**
      * Path where handlers declaration stored.

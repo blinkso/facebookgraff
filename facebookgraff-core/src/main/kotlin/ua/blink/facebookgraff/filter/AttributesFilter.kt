@@ -8,7 +8,7 @@ import ua.blink.facebookgraff.dto.request.keyboard.MarkupInlinedReplyKeyboard
 import ua.blink.facebookgraff.filter.FilterOrders.Companion.ATTRIBUTES_FILTER_ORDER
 
 /**
- * callback buttons solution added to support custom callback in both facebook and whatsapp (facebook only supports buttons in the latest message hence we do not need to try and support multiple active buttons
+ * callback buttons solution added to support custom callback in both facebook and facebook (facebook only supports buttons in the latest message hence we do not need to try and support multiple active buttons
  */
 @FilterOrder(ATTRIBUTES_FILTER_ORDER)
 class AttributesFilter(

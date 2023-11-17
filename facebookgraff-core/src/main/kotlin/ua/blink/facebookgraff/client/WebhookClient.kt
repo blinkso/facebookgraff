@@ -40,7 +40,7 @@ class WebhookClient(
         publisher.publishEvent(UpdateEvent(this, update))
     }
 
-    @RequestMapping("#{whatsappProperties.getWebhookEndpointUrl()}")
+    @RequestMapping("#{facebookProperties.getWebhookEndpointUrl()}")
     fun update(@RequestBody update: Update): ResponseEntity<String> {
         onUpdate(update.getMessage(objectMapper))
         return ResponseEntity.ok("ok")

@@ -47,7 +47,7 @@ class PropertiesValidator : Validator {
             )
         }
 
-        if (properties.mode == WhatsAppMode.WEBHOOK) {
+        if (properties.mode == FacebookMode.WEBHOOK) {
             val webhookBaseUrl = properties.webhookBaseUrl
             if (webhookBaseUrl == null || webhookBaseUrl.isEmpty()) {
                 errors.rejectValue(
