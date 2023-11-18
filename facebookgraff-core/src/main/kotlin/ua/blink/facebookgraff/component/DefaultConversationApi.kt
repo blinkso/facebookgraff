@@ -6,10 +6,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
+import org.springframework.http.codec.CodecConfigurer
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
@@ -42,6 +44,11 @@ class DefaultConversationApi(
             HttpHeaders.AUTHORIZATION,
             "Basic " + Base64.getEncoder().encodeToString("$accountSid:$accessKey".toByteArray())
         )
+        .exchangeStrategies(
+            ExchangeStrategies.builder()
+                .codecs(this::configureCodecs)
+                .build()
+        )
         .build()
     private val fileRestTemplate = WebClient.builder()
         .baseUrl("https://mcs.us1.twilio.com/v1")
@@ -49,18 +56,11 @@ class DefaultConversationApi(
             HttpHeaders.AUTHORIZATION,
             "Basic " + Base64.getEncoder().encodeToString("$accountSid:$accessKey".toByteArray())
         )
-//        .filter(ExchangeFilterFunction.ofRequestProcessor { clientRequest ->
-//            log.info("Request: ${clientRequest.method()} ${clientRequest.url()}")
-//            clientRequest.headers()
-//                .forEach { name, values -> values.forEach { value -> log.info("$name: $value") } }
-//            Mono.just(clientRequest)
-//        })
-//        .filter(ExchangeFilterFunction.ofResponseProcessor { clientResponse ->
-//            log.info("Response: ${clientResponse.statusCode()}")
-//            clientResponse.headers().asHttpHeaders()
-//                .forEach { name, values -> values.forEach { value -> log.info("$name: $value") } }
-//            Mono.just(clientResponse)
-//        })
+        .exchangeStrategies(
+            ExchangeStrategies.builder()
+                .codecs(this::configureCodecs)
+                .build()
+        )
         .clientConnector(
             ReactorClientHttpConnector(
                 HttpClient.create()
@@ -68,6 +68,10 @@ class DefaultConversationApi(
             )
         )
         .build()
+
+    private fun configureCodecs(configurer: CodecConfigurer) {
+        configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024) // 16MB
+    }
 
     override fun getUpdates(offset: String?, timeout: Long?): List<Message> {
         val allConversations = mutableListOf<Conversation>()
