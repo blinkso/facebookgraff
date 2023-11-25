@@ -90,10 +90,10 @@ open class MessageSendRequest(
                     buttons.any { (it as? InlineUrlReplyKeyboard)?.url != null } -> {
                         val text = buildString {
                             append(text)
-                            append("\n\n")
+                            append("\n")
                             buttons.forEach { button ->
                                 button as InlineUrlReplyKeyboard
-                                append("${button.text}: ${button.url}")
+                                append("\n${button.text}: ${button.url}")
                             }
                         }
 
