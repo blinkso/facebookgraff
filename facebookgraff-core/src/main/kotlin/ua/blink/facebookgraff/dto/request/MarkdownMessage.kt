@@ -7,11 +7,13 @@ class MarkdownMessage(
     text: String,
     vararg replies: String,
     chooseActionButton: String? = null,
-    chatId: String = ""
+    chatId: String = "",
+    to: String = ""
 ) : MessageSendRequest(
-    chatId,
-    text,
-    if (replies.isNotEmpty()) {
+    chatId = chatId,
+    to = to,
+    text = text,
+    replyMarkup = if (replies.isNotEmpty()) {
         val inlines = replies.map { reply ->
             InlineUrlReplyKeyboard(
                 text = reply,

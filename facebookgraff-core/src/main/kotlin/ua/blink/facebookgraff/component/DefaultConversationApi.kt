@@ -33,14 +33,27 @@ import java.util.*
 
 class DefaultConversationApi(
     accessKey: String,
-    accountSid: String,
+    private val accountSid: String,
     private val serviceSid: String,
+    private val messagingSid: String,
     private val buttonTemplate: List<String>,
     private val listTemplate: List<String>
 ) : ConversationApi {
 
     private val restTemplate = WebClient.builder()
         .baseUrl("https://conversations.twilio.com/v1")
+        .defaultHeader(
+            HttpHeaders.AUTHORIZATION,
+            "Basic " + Base64.getEncoder().encodeToString("$accountSid:$accessKey".toByteArray())
+        )
+        .exchangeStrategies(
+            ExchangeStrategies.builder()
+                .codecs(this::configureCodecs)
+                .build()
+        )
+        .build()
+    private val programmableRestTemplate = WebClient.builder()
+        .baseUrl("https://api.twilio.com/2010-04-01")
         .defaultHeader(
             HttpHeaders.AUTHORIZATION,
             "Basic " + Base64.getEncoder().encodeToString("$accountSid:$accessKey".toByteArray())
@@ -172,10 +185,11 @@ class DefaultConversationApi(
     override fun sendMessage(request: MessageSendRequest): Message {
         // Convert MessageSendRequest to form data
         val formData = formMessageData(request)
+        val shouldShortenLinks = formData["ShortenUrls"]?.firstOrNull()?.toBooleanStrictOrNull() ?: false
 
-        return restTemplate
+        return (if (shouldShortenLinks) programmableRestTemplate else restTemplate)
             .post()
-            .uri("/Services/$serviceSid/Conversations/${request.chatId}/Messages")
+            .uri(if (shouldShortenLinks) "/Accounts/$accountSid/Messages.json" else "/Services/$serviceSid/Conversations/${request.chatId}/Messages")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED) // Set content type to form urlencoded
             .body(BodyInserters.fromFormData(formData)) // Use form data
             .retrieve()
@@ -205,6 +219,11 @@ class DefaultConversationApi(
                 add("ContentSid", contentPair.first)
                 add("ContentVariables", contentPair.second)
             }
+            request.formShortenUrls()?.let { shortenUrls ->
+                add("ShortenUrls", shortenUrls.toString())
+            }
+            add("MessagingServiceSid", messagingSid)
+            add("To", request.to)
             log.info("MessageBodyContent: $this")
         }
     }

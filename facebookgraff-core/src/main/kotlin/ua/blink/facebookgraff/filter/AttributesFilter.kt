@@ -16,7 +16,7 @@ class AttributesFilter(
 ) : Filter {
 
     override suspend fun handleMessage(message: Message, chain: FilterChain) {
-        buttonsFactory.getButtonsRequest(message.chatId)?.let { buttonsRequest ->
+        buttonsFactory.getButtonsRequest(message.chatId ?: "")?.let { buttonsRequest ->
             val button =
                 (buttonsRequest.buttons as? MarkupInlinedReplyKeyboard)?.buttons?.firstOrNull {
                     (it as? InlineUrlReplyKeyboard)?.text?.contains(

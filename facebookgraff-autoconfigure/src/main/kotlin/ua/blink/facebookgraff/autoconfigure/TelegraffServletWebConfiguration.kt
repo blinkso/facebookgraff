@@ -49,6 +49,7 @@ class TelegraffServletWebConfiguration(@Qualifier("facebookProperties") val prop
             accessKey = properties.accessKey,
             accountSid = properties.accountSid,
             serviceSid = properties.serviceSid,
+            messagingSid = properties.messagingSid,
             buttonTemplate = properties.buttonTemplate,
             listTemplate = properties.listTemplate
         )

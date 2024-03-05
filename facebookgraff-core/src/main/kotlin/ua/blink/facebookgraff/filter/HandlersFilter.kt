@@ -44,29 +44,29 @@ class HandlersFilter(
         val response = try {
             if (state == null) {
                 val newState = HandlerState(
-                    chatId = message.chatId,
+                    chatId = message.chatId ?: "",
                     contact = message.user ?: "",
                     username = message.user ?: "",
                     handler = handler
                 )
-                states[message.chatId] = newState
+                states[message.chatId ?: ""] = newState
 
                 handleQuestion(newState)
             } else {
                 handleContinuation(state, message)
             }
         } catch (e: CancelException) {
-            clearState(message.chatId)
+            clearState(message.chatId ?: "")
             e.messageRequest
         } catch (e: Exception) {
             log.error("Error during handler processing", e)
 
-            clearState(message.chatId)
+            clearState(message.chatId ?: "")
             val locale = Locale(DEFAULT_LOCALE.toLanguageTag())
             MarkdownMessage("telegram_something_went_wrong".localized(locale))
         }
 
-        sendResponse(message.chatId, response)
+        sendResponse(chatId = message.chatId ?: "", to = message.user ?: "", response = response)
     }
 
     fun clearState(chatId: String) {
@@ -84,9 +84,14 @@ class HandlersFilter(
             validation(state, text, message.photo)
         } catch (e: ValidationException) {
             val question = currentStep.question(state)
-            return MessageSendRequest("", e.message, question.buttons)
+            return MessageSendRequest(
+                chatId = "",
+                to = state.username,
+                text = e.message,
+                replyMarkup = question.buttons
+            )
         } catch (e: CancelException) {
-            clearState(message.chatId)
+            clearState(message.chatId ?: "")
             return e.messageRequest
         }
         state.answers[currentStep.key] = answer
@@ -118,9 +123,10 @@ class HandlersFilter(
         return state.handler.process(state, state.answers)
     }
 
-    fun sendResponse(chatId: String, response: SendRequest?) {
+    fun sendResponse(chatId: String, to: String, response: SendRequest?) {
         if (response != null && response.chatId == "") {
             response.chatId = chatId
+            response.to = to
         }
 
         when (response) {
@@ -149,7 +155,7 @@ class HandlersFilter(
                 ?: return null
         for (entry in handlers) {
             if (text.startsWith(entry.key)) {
-                clearState(message.chatId)
+                clearState(message.chatId ?: "")
                 return entry.value
             }
         }
