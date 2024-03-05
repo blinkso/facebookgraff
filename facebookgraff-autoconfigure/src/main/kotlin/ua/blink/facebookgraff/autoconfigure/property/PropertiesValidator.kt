@@ -33,6 +33,13 @@ class PropertiesValidator : Validator {
             )
         }
 
+        if (properties.messagingSid.isEmpty()) {
+            errors.rejectValue(
+                "messagingSid", "messagingSid.null",
+                "Messaging SID must not be null!"
+            )
+        }
+
         if (properties.buttonTemplate.isEmpty()) {
             errors.rejectValue(
                 "buttonTemplate", "buttonTemplate.null",

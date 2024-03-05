@@ -9,14 +9,14 @@ data class Message(
     @JsonProperty("account_sid")
     val accountSid: String,
 
-    @JsonProperty("chat_service_sid")
-    val serviceSid: String,
-
-    @JsonProperty("conversation_sid")
-    val chatId: String,
-
     @JsonProperty("date_created")
     val date: String,
+
+    @JsonProperty("chat_service_sid")
+    val serviceSid: String?,
+
+    @JsonProperty("conversation_sid")
+    val chatId: String?,
 
     @JsonProperty("author")
     val user: String?,

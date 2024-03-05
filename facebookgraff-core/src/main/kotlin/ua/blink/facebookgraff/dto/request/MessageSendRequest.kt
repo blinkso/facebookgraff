@@ -9,11 +9,13 @@ import ua.blink.facebookgraff.dto.request.keyboard.ReplyKeyboard
 open class MessageSendRequest(
     chatId: String,
 
+    to: String,
+
     @get:JsonProperty("Body")
     val text: String,
 
     replyMarkup: ReplyKeyboard? = null,
-) : SendRequest(chatId, replyMarkup) {
+) : SendRequest(chatId = chatId, to = to, buttons = replyMarkup) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -159,6 +161,35 @@ open class MessageSendRequest(
 
                         val contentSid = listTemplate[buttons.size.minus(1)]
                         contentSid to variables.replace("\\r?\\n|\\r".toRegex(), "  ")
+                    }
+                }
+            }
+
+            else -> {
+                null
+            }
+        }
+    }
+
+    fun formShortenUrls(): Boolean? {
+        return when (buttons) {
+            is MarkupInlinedReplyKeyboard -> {
+                val actionButton =
+                    buttons.buttons.firstOrNull { it is ActionReplyKeyboard } as? ActionReplyKeyboard
+                val buttons = buttons.buttons.let { buttons ->
+                    actionButton?.let { buttons.minusElement(it) } ?: buttons
+                }
+                when {
+                    buttons.any { (it as? InlineUrlReplyKeyboard)?.url != null } -> {
+                        true
+                    }
+
+                    buttons.size <= 3 && this !is MarkdownMessage -> {
+                        false
+                    }
+
+                    else -> {
+                        false
                     }
                 }
             }

@@ -24,6 +24,11 @@ class Properties {
     var serviceSid: String = ""
 
     /**
+     * WhatsApp Bot API Messaging Key.
+     */
+    var messagingSid: String = ""
+
+    /**
      * Button templates up to three buttons
      */
     var buttonTemplate: List<String> = listOf()
