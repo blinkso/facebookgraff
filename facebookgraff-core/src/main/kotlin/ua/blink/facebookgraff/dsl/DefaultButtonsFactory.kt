@@ -6,13 +6,15 @@ import ua.blink.facebookgraff.dto.request.MessageSendRequest
 @Component
 class DefaultButtonsFactory : ButtonsFactory {
 
-    private val buttonRequests: MutableMap<String, MessageSendRequest> = hashMapOf()
+    // Store a list of button requests for each chatId
+    private val buttonRequests: MutableMap<String, MutableList<MessageSendRequest>> = hashMapOf()
 
     override fun addButtonsRequest(sendRequest: MessageSendRequest) {
-        buttonRequests[sendRequest.chatId] = sendRequest
+        buttonRequests.getOrPut(sendRequest.chatId) { mutableListOf() }.add(sendRequest)
     }
 
-    override fun getButtonsRequest(chatId: String): MessageSendRequest? {
-        return buttonRequests[chatId]
+    // Get all button requests for a chatId
+    override fun getButtonsRequests(chatId: String): List<MessageSendRequest> {
+        return buttonRequests[chatId] ?: emptyList()
     }
 }

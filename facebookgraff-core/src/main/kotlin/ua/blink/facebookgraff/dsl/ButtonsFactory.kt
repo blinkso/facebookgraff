@@ -6,6 +6,5 @@ interface ButtonsFactory {
 
     fun addButtonsRequest(sendRequest: MessageSendRequest)
 
-    fun getButtonsRequest(chatId: String): MessageSendRequest?
-
+    fun getButtonsRequests(chatId: String): List<MessageSendRequest>
 }
