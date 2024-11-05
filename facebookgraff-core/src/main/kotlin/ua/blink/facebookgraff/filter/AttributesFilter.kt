@@ -21,9 +21,9 @@ class AttributesFilter(
         val messageText = message.text ?: ""
 
         // Check all button requests for matching buttons
-        buttonsFactory.getButtonsRequests(chatId).forEach { buttonsRequest ->
+        buttonsFactory.getButtonsRequests(chatId).asReversed().forEach { buttonsRequest ->
             val button = (buttonsRequest.buttons as? MarkupInlinedReplyKeyboard)?.buttons?.firstOrNull {
-                (it as? InlineUrlReplyKeyboard)?.text == messageText
+                (it as? InlineUrlReplyKeyboard)?.text?.contains(messageText, ignoreCase = true) == true
             }
 
             if ((button as? InlineUrlReplyKeyboard)?.callbackData != null) {
