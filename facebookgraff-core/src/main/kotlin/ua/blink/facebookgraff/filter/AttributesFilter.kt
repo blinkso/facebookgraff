@@ -23,7 +23,7 @@ class AttributesFilter(
         // Check all button requests for matching buttons
         buttonsFactory.getButtonsRequests(chatId).forEach { buttonsRequest ->
             val button = (buttonsRequest.buttons as? MarkupInlinedReplyKeyboard)?.buttons?.firstOrNull {
-                (it as? InlineUrlReplyKeyboard)?.text?.contains(messageText, ignoreCase = true) == true
+                (it as? InlineUrlReplyKeyboard)?.text == messageText
             }
 
             if ((button as? InlineUrlReplyKeyboard)?.callbackData != null) {
