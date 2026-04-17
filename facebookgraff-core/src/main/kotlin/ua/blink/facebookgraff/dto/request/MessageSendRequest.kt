@@ -1,6 +1,7 @@
 package ua.blink.facebookgraff.dto.request
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
 import ua.blink.facebookgraff.dto.request.keyboard.ActionReplyKeyboard
 import ua.blink.facebookgraff.dto.request.keyboard.InlineUrlReplyKeyboard
 import ua.blink.facebookgraff.dto.request.keyboard.MarkupInlinedReplyKeyboard
@@ -51,25 +52,21 @@ open class MessageSendRequest(
                     }
 
                     buttons.size <= 3 && this !is MarkdownMessage -> {
-                        val attributes = buttons
-                            .withIndex()
-                            .joinToString(prefix = "{", postfix = "}") { (index, button) ->
+                        serializeJsonEntries(
+                            buttons.withIndex().associate { (index, button) ->
                                 button as InlineUrlReplyKeyboard
-                                "\"${index + 2}\":\"${button.callbackData ?: ""}\""
+                                "${index + 2}" to (button.callbackData ?: "")
                             }
-
-                        attributes
+                        )
                     }
 
                     else -> {
-                        val attributes = buttons
-                            .withIndex()
-                            .joinToString(prefix = "{", postfix = "}") { (index, button) ->
+                        serializeJsonEntries(
+                            buttons.withIndex().associate { (index, button) ->
                                 button as InlineUrlReplyKeyboard
-                                "\"${index + 3}\":\"${button.callbackData ?: ""}\""
+                                "${index + 3}" to (button.callbackData ?: "")
                             }
-
-                        attributes
+                        )
                     }
                 }
             }
@@ -135,32 +132,30 @@ open class MessageSendRequest(
                     }
 
                     buttons.size <= 3 && this !is MarkdownMessage -> {
-                        val variables = buildString {
-                            append("{\"1\":\"${text}\"")
-                            buttons.forEachIndexed { index, button ->
-                                button as InlineUrlReplyKeyboard
-                                append(", \"${index + 2}\":\"${button.text.take(BUTTON_MAX_LENGTH)}\"")
-                            }
-                            append("}")
-                        }
-
                         val contentSid = buttonTemplate[buttons.size.minus(1)]
-                        contentSid to variables.replace("\\r?\\n|\\r".toRegex(), "  ")
+                        contentSid to serializeContentVariables(
+                            linkedMapOf<String, String>().apply {
+                                put("1", text)
+                                buttons.forEachIndexed { index, button ->
+                                    button as InlineUrlReplyKeyboard
+                                    put("${index + 2}", button.text.take(BUTTON_MAX_LENGTH))
+                                }
+                            }
+                        )
                     }
 
                     else -> {
-                        val variables = buildString {
-                            append("{\"1\":\"${text}\"")
-                            append(", \"2\":\"${actionButton?.text?.take(BUTTON_MAX_LENGTH) ?: ""}\"")
-                            buttons.forEachIndexed { index, button ->
-                                button as InlineUrlReplyKeyboard
-                                append(", \"${index + 3}\":\"${button.text.take(LIST_ITEM_MAX_LENGTH)}\"")
-                            }
-                            append("}")
-                        }
-
                         val contentSid = listTemplate[buttons.size.minus(1)]
-                        contentSid to variables.replace("\\r?\\n|\\r".toRegex(), "  ")
+                        contentSid to serializeContentVariables(
+                            linkedMapOf<String, String>().apply {
+                                put("1", text)
+                                put("2", actionButton?.text?.take(BUTTON_MAX_LENGTH) ?: "")
+                                buttons.forEachIndexed { index, button ->
+                                    button as InlineUrlReplyKeyboard
+                                    put("${index + 3}", button.text.take(LIST_ITEM_MAX_LENGTH))
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -201,7 +196,21 @@ open class MessageSendRequest(
     }
 
     private companion object {
+        private val OBJECT_MAPPER = ObjectMapper()
+        private val NEW_LINE_REGEX = "\\r?\\n|\\r".toRegex()
         private const val BUTTON_MAX_LENGTH = 20
         private const val LIST_ITEM_MAX_LENGTH = 24
+
+        private fun serializeJsonEntries(entries: Map<String, String>): String {
+            return OBJECT_MAPPER.writeValueAsString(entries)
+        }
+
+        private fun serializeContentVariables(entries: Map<String, String>): String {
+            return serializeJsonEntries(
+                entries.mapValues { (_, value) ->
+                    value.replace(NEW_LINE_REGEX, "  ")
+                }
+            )
+        }
     }
 }
